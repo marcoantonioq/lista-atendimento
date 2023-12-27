@@ -1,0 +1,45 @@
+// Definições relacionadas ao banco de dados
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Configurações do Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo de Usuário
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+model Evento {
+  id        Int       @id @default(autoincrement())
+  list      String
+  title     String
+  locale    String?
+  desc      String?
+  maps      String?
+  gid       String?
+  recurring String?
+  date      DateTime
+  end       DateTime
+  updated   DateTime? @updatedAt
+}
+
+model EventoRemoved {
+  id        Int       @id @default(autoincrement())
+  list      String
+  title     String
+  locale    String?
+  desc      String?
+  maps      String?
+  gid       String?
+  recurring String?
+  date      DateTime
+  end       DateTime
+  updated   DateTime? @updatedAt
+}

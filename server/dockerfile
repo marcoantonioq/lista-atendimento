@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+# Crie e defina o diretório de trabalho no contêiner
+WORKDIR /app
+
+# Copie o package.json e o package-lock.json para o diretório de trabalho
+COPY package*.json ./
+
+# Instale as dependências do projeto
+RUN npm install
+
+# Copie os arquivos do projeto para o diretório de trabalho
+COPY . .
+
+RUN npm run migrate
+
+# Exponha a porta
+EXPOSE 3000
+
+# Comando para iniciar o aplicativo quando o contêiner for iniciado
+CMD [ "npm", "run", "start" ]
