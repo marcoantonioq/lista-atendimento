@@ -89,8 +89,8 @@ export const actions = {
     ) {
       payload.requestBody.recurrence = [];
       payload.requestBody?.recurrence?.push(event.recurring);
+      console.log("Evento com recorrência: ", event, payload);
     }
-    console.log("Evento com recorrência: ", event, payload);
 
     const { data } = await calendar.events.insert(payload);
     return actions.toPDO(data);

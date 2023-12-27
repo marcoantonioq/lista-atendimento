@@ -17,8 +17,10 @@ sockets.server.on("add", async (e: Evento) => {
   try {
     if (e.gid?.trim() === "") {
       e.gid = (await actions.createEventGoogle(e)).gid;
+      console.log("Criado na agenda: ", e);
     } else {
       e.gid = (await actions.updateEventGoogle(e)).gid;
+      console.log("Atualizado na agenda: ", e);
     }
     await eventos.save(e);
     if (e.recurring?.trim() !== "") {
