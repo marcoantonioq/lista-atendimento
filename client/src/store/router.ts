@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { reactive, computed, markRaw } from "vue";
 
-import Agenda from "../../web/components/Agenda.vue";
-import Darpe from "../../web/components/Darpe.vue";
-import Home from "../../web/components/Home.vue";
-import Lista from "../../web/components/Lista.vue";
-import Config from "../../web/components/Config.vue";
-import NotFound from "../../web/components/NotFound.vue";
-import Calendar from "../../web/components/Calendar.vue";
-import Whatsapp from "../../web/components/Whatsapp.vue";
+import Agenda from "../components/Agenda.vue";
+import Darpe from "../components/Darpe.vue";
+import Home from "../components/Home.vue";
+import Lista from "../components/Lista.vue";
+import Config from "../components/Config.vue";
+import NotFound from "../components/NotFound.vue";
+import Calendar from "../components/Calendar.vue";
+import Whatsapp from "../components/Whatsapp.vue";
 
 interface RouteComponent {
   [key: string]: any;

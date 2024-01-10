@@ -128,12 +128,12 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, watch, watchEffect } from "vue";
-import { Evento } from "../../shared/app/Eventos";
-import { locales } from "../../shared/app/Locales";
-import { titles } from "../../shared/app/Titles";
-import { description } from "../../shared/app/Description";
-import { format } from "../../shared/utils/helpers";
-import { filterText } from "../../shared/utils/filters";
+import { locales } from "../store/locales";
+import { titles } from "../store/titles";
+import { description } from "../store/description";
+import { format } from "../utils/helpers";
+import { filterText } from "../utils/filters";
+import { Evento } from "../App";
 
 type form = {
   list: string;

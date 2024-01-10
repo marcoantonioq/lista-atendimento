@@ -9,6 +9,8 @@ sockets.onConnection(async (socket) => {
 
   socket.on("save", async (e: Evento) => {
     const event = await eventos.save(e);
+    if (e.title.match(/(AVISOS À IRMANDADE)/gi)) e.date?.setHours(0);
+    if (e.title.match(/(VIAGENS MISSIONÁRIAS)/gi)) e.date?.setHours(1);
     const updated = await eventos.all();
     setTimeout(() => {
       sockets.server.emit("add", event);

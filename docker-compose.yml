@@ -1,22 +1,22 @@
 version: "3.8"
 
 services:
-  server:
-    container_name: server
+  server_lista:
+    container_name: server_lista
     build:
       context: server
       dockerfile: Dockerfile
     restart: always
 
-  client:
-    container_name: client
+  client_lista:
+    container_name: client_lista
     build:
       context: client
       dockerfile: Dockerfile
     restart: always
 
-  nginx:
-    container_name: nginx
+  nginx_lista:
+    container_name: nginx_lista
     image: nginx
     restart: always
     ports:

@@ -6,13 +6,12 @@
     <component :is="currentView" />
   </div>
   <div v-if="!settings.onLine" class="warn offline print-hide">
-    <b class="w">Você está Offline!</b>
+    <b>Você está Offline!</b>
   </div>
 </template>
 
 <script setup lang="ts">
-import "../shared/app/Eventos";
-import { currentView } from "./composables/router";
+import { currentView } from "./store/router";
 import { reactive } from "vue";
 
 const settings = reactive({
@@ -38,3 +37,4 @@ window.addEventListener("offline", () => {
   text-align: center;
 }
 </style>
+./Eventos

@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Router } from "../composables/router";
+import { Router } from "../store/router";
 import { reactive, watchEffect, onMounted } from "vue";
 
 const imprimir = () => {
