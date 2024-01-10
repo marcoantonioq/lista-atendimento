@@ -2,7 +2,7 @@
     "values": [
         {
             "title": "REGIONAL",
-            "href": "#lista?filter=REGIONAL",
+            "href": "#lista?lista=REGIONAL",
             "icon": "img/lista.png"
         },
         {
@@ -27,7 +27,7 @@
         },
         {
             "title": "DARPE",
-            "href": "#lista?filter=DARPE",
+            "href": "#lista?lista=DARPE",
             "icon": "img/lista.png"
         },
         {
@@ -37,7 +37,7 @@
         },
         {
             "title": "Goiás",
-            "href": "#lista?local=GOIÁS - ",
+            "href": "#lista?local=GOIAS",
             "icon": "img/lista.png"
         },
         {

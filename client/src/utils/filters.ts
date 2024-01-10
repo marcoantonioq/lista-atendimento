@@ -14,31 +14,26 @@ function includesNormalized(mainStr: string, subStr: string): boolean {
 
 function filterByList(event: Evento, lista: string): boolean {
   if (!lista) return true;
-  console.log("Definido o filtro por local: ", lista);
   return includesNormalized(event.list, lista);
 }
 
 function filterByLocale(event: Evento, locale: string): boolean {
   if (!locale) return true;
-  console.log("Definido o filtro por local: ", locale);
   return includesNormalized(event.locale, locale);
+}
+
+function generateEventText(event: Evento): string {
+  return `${event.date?.toLocaleDateString()} ${event.title} ${event.list} ${
+    event.locale
+  } ${event.desc}`;
 }
 
 function filterByText(event: Evento, filter: string): boolean {
   if (!filter) return true;
 
-  const text =
-    event.date?.toLocaleDateString() +
-    " " +
-    event.title +
-    " " +
-    event.list +
-    " " +
-    event.locale +
-    " " +
-    event.desc;
-
+  const text = generateEventText(event);
   const filterNFD = normalizeString(filter);
+
   return filterNFD.split(" ").every((e) => includesNormalized(text, e));
 }
 
@@ -51,6 +46,11 @@ export function groupByProperty(
 ): { [key: string]: Evento[] } {
   const groupedEvents: { [key: string]: Evento[] } = {};
 
+  // Caso não tenha nenhum filtro, adicione somente os itens da Regional
+  if (!lista && !filter && !locale) {
+    lista = "REGIONAL";
+  }
+
   eventos.forEach((event) => {
     if (
       !filterByList(event, lista) ||
@@ -61,9 +61,7 @@ export function groupByProperty(
     }
 
     const key = event[property] as string;
-    if (!(key in groupedEvents)) {
-      groupedEvents[key] = [];
-    }
+    groupedEvents[key] = groupedEvents[key] || [];
     groupedEvents[key].push(event);
   });
 
