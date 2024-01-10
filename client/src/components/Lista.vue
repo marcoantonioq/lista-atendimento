@@ -20,43 +20,40 @@
           x-webkit-speech=""
         />
       </div>
-
-      <div class="flex right">
-        <a v-if="app.state.shareable" @click.prevent="settings.shared">
-          <img class="icon" src="img/compartilhar.png" alt="Compartilhar..." />
-        </a>
-        <a v-if="app.state.shareable" href="#wa">
-          <img class="icon" src="img/solicitar.png" alt="Solicitar..." />
-        </a>
-        <a
-          v-if="app.state.isAdmin"
-          :class="{ rotate: app.state.loading }"
-          @click.prevent="app.loadEvents()"
-        >
-          <img
-            class="icon print-hide"
-            src="/img/recarregar.png"
-            alt="Atualizar"
-          />
-        </a>
-        <a v-if="app.state.isAdmin" @click.prevent="openSavePopup(null)">
-          <img
-            class="icon print-hide"
-            src="/img/adicionar.png"
-            alt="Adicionar evento"
-          />
-        </a>
-        <a @click.prevent="imprimir()">
-          <img
-            class="icon print-hide"
-            src="/img/impressora.png"
-            alt="Impressão"
-          />
-        </a>
-        <a href="#home">
-          <img class="icon" src="img/botao-fechar.png" alt="Pagina principal" />
-        </a>
-      </div>
+      <a v-if="app.state.shareable" @click.prevent="settings.shared">
+        <img class="icon" src="img/compartilhar.png" alt="Compartilhar..." />
+      </a>
+      <a v-if="app.state.shareable" href="#wa">
+        <img class="icon" src="img/solicitar.png" alt="Solicitar..." />
+      </a>
+      <a
+        v-if="app.state.isAdmin"
+        :class="{ rotate: app.state.loading }"
+        @click.prevent="app.loadEvents()"
+      >
+        <img
+          class="icon print-hide"
+          src="/img/recarregar.png"
+          alt="Atualizar"
+        />
+      </a>
+      <a v-if="app.state.isAdmin" @click.prevent="openSavePopup(null)">
+        <img
+          class="icon print-hide"
+          src="/img/adicionar.png"
+          alt="Adicionar evento"
+        />
+      </a>
+      <a @click.prevent="imprimir()">
+        <img
+          class="icon print-hide"
+          src="/img/impressora.png"
+          alt="Impressão"
+        />
+      </a>
+      <a href="#home">
+        <img class="icon" src="img/botao-fechar.png" alt="Pagina principal" />
+      </a>
     </div>
     <div
       class="table"
@@ -147,8 +144,8 @@ const settings = reactive({
   shared: navigator.share,
   showPopup: false,
   lista: Router.query.get("lista") || "",
-  search: Router.query.get("filter") || "",
   locale: Router.query.get("local") || "",
+  search: Router.query.get("pesquisar") || "",
   selected: null as Evento | null,
 });
 
@@ -223,6 +220,12 @@ function imprimir() {
     padding: 5px;
     border: none !important;
     font-size: 1.1rem;
+    width: 100%;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 180px;
   }
 }
 

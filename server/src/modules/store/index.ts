@@ -30,6 +30,7 @@ sockets.onConnection(async (socket) => {
   });
 
   socket.on("all", async (call: (e: Evento[]) => void) => {
-    call(await eventos.all());
+    const events = await eventos.all();
+    call(events);
   });
 });

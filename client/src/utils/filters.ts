@@ -41,21 +41,27 @@ export function groupByProperty(
   eventos: Evento[],
   property: keyof Evento,
   lista = "",
-  filter = "",
+  search = "",
   locale = ""
 ): { [key: string]: Evento[] } {
   const groupedEvents: { [key: string]: Evento[] } = {};
 
   // Caso não tenha nenhum filtro, adicione somente os itens da Regional
-  if (!lista && !filter && !locale) {
+  if (!lista && !search && !locale) {
     lista = "REGIONAL";
+  }
+  const result = search.match(/^>(.*)/);
+  if (result && result.length > 1) {
+    lista = "";
+    locale = "";
+    search = result[1].trim();
   }
 
   eventos.forEach((event) => {
     if (
       !filterByList(event, lista) ||
       !filterByLocale(event, locale) ||
-      !filterByText(event, filter)
+      !filterByText(event, search)
     ) {
       return;
     }

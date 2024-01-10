@@ -48,24 +48,21 @@ sockets.server.on("updated", async (data: Evento[]) => {
 /**
  * Remover eventos...
  */
-// (async () => {
-//   const events = await actions.getEventGoogle(
-//     new Date("2023-01-26"),
-//     new Date("2025-02-27")
-//   );
-//   const filtered = events.filter(
-//     (e) => true || (e.locale && e.locale.includes("SÃO PEDRO"))
-//   );
-//   for (const event of filtered) {
-//     try {
-//       console.log("Removendo evento: ", event);
+export async function removeEvents(date1: Date, date2: Date) {
+  const events = await actions.getEventGoogle(date1, date2);
+  const filtered = events.filter(
+    (e) => true || (e.locale && e.locale?.includes("SÃO PEDRO"))
+  );
+  for (const event of filtered) {
+    try {
+      console.log("Removendo evento: ", event);
 
-//       await actions.deleteEventGoogle(event);
-//     } catch (error) {
-//       console.log("Erro ao remover eventos: ", event.title, event.locale);
-//     }
-//   }
-// })();
+      await actions.deleteEventGoogle(event);
+    } catch (error) {
+      console.log("Erro ao remover eventos: ", event.title, event.locale);
+    }
+  }
+}
 
 /**
  * Baixar eventos do Google agenda
@@ -76,6 +73,7 @@ async function sync() {
     config.dateFirst,
     config.dateLast
   );
+  console.log("Itens do google encontrados: ", googleEvents.length);
 
   // Atualizar do google agenda para local!
   for (const googleEvent of googleEvents) {
@@ -90,8 +88,11 @@ async function sync() {
   for (const e of data) {
     const item = googleEvents.find((event) => event.gid === e.gid);
     if (!item) {
-      console.log("Evento removido do google e remover localmente: ", e);
-      await eventos.remove(e.id);
+      console.log(
+        "Evento foi removido do google e será removido localmente: ",
+        e
+      );
+      // await eventos.remove(e.id);
     }
   }
   sockets.io.sockets.emit("eventos", await eventos.all());
