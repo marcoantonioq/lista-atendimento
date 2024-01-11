@@ -15,7 +15,6 @@ export async function save(data: Evento): Promise<Evento> {
           ...event,
         },
       });
-      // log("criar evento: ", JSON.stringify(result, null, 2));
       return result;
     } else {
       const result = await prisma.evento.update({

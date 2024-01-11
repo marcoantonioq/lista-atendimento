@@ -12,7 +12,7 @@ RUN npm install
 # Copie os arquivos do projeto para o diretório de trabalho
 COPY . .
 
-RUN npm run migrate
+# RUN npm run migrate
 
 # Exponha a porta
 EXPOSE 3000
