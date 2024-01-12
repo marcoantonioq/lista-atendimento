@@ -15,7 +15,9 @@
       Espírito Santo da Graça. (João 16:13)
     </p>
     <p>
-      <a href="#lista?filter=DARPE"> Acesse a lista de atendimento do DARPE </a>
+      <a href="#lista?pesquisar=DARPE">
+        Acesse a lista de atendimento do DARPE
+      </a>
     </p>
   </div>
 </template>

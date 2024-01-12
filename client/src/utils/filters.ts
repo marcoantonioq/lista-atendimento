@@ -50,7 +50,7 @@ export function groupByProperty(
   if (!lista && !search && !locale) {
     lista = "REGIONAL";
   }
-  const result = search.match(/^>(.*)/);
+  const result = search.match(/^\*(.*)/);
   if (result && result.length > 1) {
     lista = "";
     locale = "";
@@ -75,13 +75,9 @@ export function groupByProperty(
 }
 
 export function filterText(list: string[], word: string, limit = 4): string[] {
-  const normalizedWord = normalizeString(word);
+  if (!word) return list.slice(0, limit);
 
   return list
-    .filter((e) =>
-      normalizeString(e)
-        .split(" ")
-        .every((s) => includesNormalized(normalizedWord, s))
-    )
+    .filter((e) => word.split(" ").every((s) => includesNormalized(e, s)))
     .slice(0, limit);
 }

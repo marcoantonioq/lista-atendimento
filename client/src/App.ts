@@ -28,7 +28,7 @@ class EventoService {
   });
 
   constructor(private server: string, private token: string) {
-    if (token) {
+    if (token && navigator.onLine) {
       this.connectSocket();
       this.state.isAdmin = true;
     } else {
@@ -78,14 +78,24 @@ class EventoService {
 
   public async loadEvents(): Promise<void> {
     try {
-      const url = `/data/data.json?v=${new Date()
+      const cacheName = "eventDataCache";
+      const url = "/data/data.json";
+      const cacheResponse = await caches.match(url);
+
+      if (cacheResponse) {
+        console.log("Carregando dados do cache do PWA...");
+        const events = await cacheResponse.json();
+        this.updateEventos(events);
+      }
+      const latestUrl = `${url}?v=${new Date()
         .toISOString()
         .replace(/\D/g, "")}`;
-      const response = await fetch(url);
-
+      const response = await fetch(latestUrl);
       if (response.ok) {
         const events = await response.json();
         this.updateEventos(events);
+        const cache = await caches.open(cacheName);
+        await cache.put(url, new Response(JSON.stringify(events)));
       } else {
         console.error("Erro ao carregar dados do servidor:", response.status);
       }

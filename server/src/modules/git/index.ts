@@ -1,5 +1,5 @@
 import { config } from "../../config";
-import * as sockets from "../../infra/socket";
+import * as sockets from "../../infra/http";
 import { GitHubRepository } from "../../util/GitHubRepository";
 import * as eventos from "../Eventos";
 import { Evento } from "@prisma/client";

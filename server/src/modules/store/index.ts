@@ -1,11 +1,11 @@
-import * as sockets from "../../infra/socket";
+import * as sockets from "../../infra/http";
 import * as eventos from "../Eventos";
 import { Evento } from "@prisma/client";
 
 console.log("Store iniciado!");
 
 sockets.onConnection(async (socket) => {
-  sockets.io.emit("eventos", await eventos.all());
+  socket.emit("eventos", await eventos.all());
 
   socket.on("save", async (e: Evento) => {
     const event = await eventos.save(e);

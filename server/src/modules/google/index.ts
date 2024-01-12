@@ -1,4 +1,4 @@
-import * as sockets from "../../infra/socket";
+import * as sockets from "../../infra/http";
 import * as eventos from "../Eventos";
 import { Evento } from "@prisma/client";
 import { actions } from "./Agenda";
