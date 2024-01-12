@@ -225,7 +225,7 @@ function imprimir() {
 
   .search {
     flex: 1;
-    min-width: 180px;
+    min-width: 90px;
   }
 }
 
