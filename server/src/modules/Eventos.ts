@@ -9,21 +9,12 @@ export async function save(data: Evento): Promise<Evento> {
   const { id, ...event } = data;
 
   try {
-    if (id === 0) {
-      const result = await prisma.evento.create({
-        data: {
-          ...event,
-        },
-      });
-      return result;
-    } else {
-      const result = await prisma.evento.update({
-        where: { id },
-        data: event,
-      });
-      // log("Atualizar evento: ", JSON.stringify(result, null, 2));
-      return result;
-    }
+    const result = await prisma.evento.upsert({
+      where: { id },
+      update: { ...event },
+      create: { ...event },
+    });
+    return result;
   } catch (error) {
     const msg = `Erro ao atualizar evento: ${error}`;
     log(msg);

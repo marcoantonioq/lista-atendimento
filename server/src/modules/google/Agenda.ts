@@ -105,16 +105,19 @@ export const actions = {
 
     const googleEvents: Evento[] = [];
     for (const [agenda, calendarId] of Object.entries(agendas)) {
-      const response = await calendar.events.list({
-        calendarId,
-        timeMin: startDate.toISOString(),
-        timeMax: endDate.toISOString(),
-        singleEvents: true,
-      });
-
-      response.data.items?.map(actions.toPDO).map((e) => {
-        googleEvents.push(e);
-      });
+      try {
+        const response = await calendar.events.list({
+          calendarId,
+          timeMin: startDate.toISOString(),
+          timeMax: endDate.toISOString(),
+          singleEvents: true,
+        });
+        response.data.items?.map(actions.toPDO).map((e) => {
+          googleEvents.push(e);
+        });
+      } catch (error: any) {
+        console.log("Erro ao buscar na agenda: ", error.response.data);
+      }
     }
     return googleEvents;
   },

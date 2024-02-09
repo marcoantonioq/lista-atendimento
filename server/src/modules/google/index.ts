@@ -73,8 +73,6 @@ async function sync() {
     config.dateFirst,
     config.dateLast
   );
-  console.log("Itens do google encontrados: ", googleEvents.length);
-
   // Atualizar do google agenda para local!
   for (const googleEvent of googleEvents) {
     const item = data.find((e) => e.gid === googleEvent.gid);
@@ -92,10 +90,11 @@ async function sync() {
         "Evento foi removido do google e será removido localmente: ",
         e
       );
-      // await eventos.remove(e.id);
+      await eventos.remove(e.id);
     }
   }
   sockets.io.sockets.emit("eventos", await eventos.all());
 }
 
+setInterval(sync, 60000);
 sync();
