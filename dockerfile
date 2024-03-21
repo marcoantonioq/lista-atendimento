@@ -1,4 +1,8 @@
-FROM node:20-alpine as CLIENT
+FROM node:20
+
+RUN apt update \
+    && apt install git \
+    && git clone https://github.com/marcoantonioq/lista-atendimento.git /app
 
 WORKDIR /app/client
 COPY client .

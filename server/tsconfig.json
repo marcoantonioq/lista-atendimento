@@ -2,10 +2,13 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "lib": ["es6"],
-    "allowJs": true,
+    "lib": ["es6", "DOM"],
+    "outDir": "./dist",
+    "baseUrl": "./",
     "strict": true,
-    "outDir": "build",
+    "allowJs": true,
     "esModuleInterop": true
-  }
+  },
+  "exclude": ["node_modules"],
+  "include": ["src/**/*.ts"]
 }
