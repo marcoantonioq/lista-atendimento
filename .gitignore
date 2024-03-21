@@ -1,0 +1,14 @@
+config/*
+database.db
+node_modules
+
+# tmp
+out
+dist
+build
+*.log
+*.tgz
+*.tsbuildinfo
+.envj
+.lock-wscript
+.npm

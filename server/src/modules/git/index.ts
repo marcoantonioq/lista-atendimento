@@ -1,53 +1,49 @@
-import { config } from "../../config";
-import * as sockets from "../../infra/http";
-import { GitHubRepository } from "../../util/GitHubRepository";
-import * as eventos from "../Eventos";
-import { Evento } from "@prisma/client";
+/* eslint-disable comma-dangle */
+import { watchEffect } from "vue";
+import { IApp } from "../../app";
+import { GitHubRepository } from "./GitHubRepository";
+import { sortEvento } from "../evento/sortEventos";
 
-console.log("Git iniciado!");
-const githubRepo = new GitHubRepository(
-  "ccbfaina",
-  "ccbfaina.github.io",
-  config.token
-);
+export async function updateDataToGitHub (app: IApp) {
+  console.log("Salvando no git...");
+  const githubRepo = new GitHubRepository(
+    app.git.owner,
+    app.git.repo,
+    app.git.token
+  );
 
-sockets.onConnection(async (socket) => {
-  socket.on("reload", async () => {
-    console.log("Reload data git!");
-    updateDataToGitHub();
-  });
-});
-
-sockets.server.on("add", async (e: Evento) => {
-  updateDataToGitHub();
-  console.log("Salvar no git: ", e);
-});
-
-sockets.server.on("removed", async (e: Evento) => {
-  updateDataToGitHub();
-  console.log("Remover no git: ", e);
-});
-
-sockets.server.on("updated", async (events: Evento[]) => {
-  console.log("Atualizar eventos no git: ", events.length);
-});
-
-async function updateDataToGitHub() {
-  const res = await githubRepo.getContentData("data/data.json");
+  const res = await githubRepo.getContentData(app.git.path);
   if (res?.content) {
-    const events = await eventos.all();
-    console.log("Eventos atualizados no git: ", events.length);
-
-    if (events.length) {
-      const result = await githubRepo.commitFile(
-        "data/data.json",
-        JSON.stringify(events)
-      );
-      if (result && result.ok) {
-        console.log(
-          `Dados atualizados (${events.length}) no Git com status ${result.status}`
+    const data = {
+      eventos: {
+        items: app.eventos.items,
+      },
+    };
+    if (data.eventos.items.length) {
+      try {
+        const result = await githubRepo.commitFile(
+          app.git.path,
+          JSON.stringify(data, null, 2)
         );
+        if (result && result.ok) {
+          console.log(
+              `GIT: Dados atualizados (${data.eventos.items.length}) no Git com status ${result.status}`
+          );
+        }
+      } catch (error) {
+        console.log("Erro ao salvar no git: ", error);
       }
     }
   }
+}
+
+export async function startGIT (app: IApp) {
+  if (!app.git.token || !app.git.owner) return;
+  console.log("MODULO: Git iniciado!");
+
+  watchEffect(async () => {
+    app.eventos.items.map((e) => [e.gid, e.desc, e.list, e.locale, e.title]);
+    sortEvento(app);
+    await updateDataToGitHub(app);
+  });
 }

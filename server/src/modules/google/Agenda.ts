@@ -1,68 +1,172 @@
 import { calendar_v3, google } from "googleapis";
-import * as fs from "fs";
-import { Evento } from "@prisma/client";
+import { GoogleAuth } from "google-auth-library";
+import { ICalendars, IEvento, ISecret } from "../../app";
 
-interface DateRange {
-  dateFirst: Date;
-  dateLast: Date;
-}
+export class GoogleCalendarManager {
+  private static instance: GoogleCalendarManager | null = null;
+  private auth: GoogleAuth | null = null;
+  private calendar: calendar_v3.Calendar | undefined;
+  public calendars: ICalendars[];
 
-const agendas = {
-  REGIONAL:
-    "47cafc18f2792c5710809aae573052af940ed0b8d6a65dc2527f2c0063460c6a@group.calendar.google.com",
-  DARPE:
-    "bd73b8fdc0f89f33391898c396cc90507ac870d22e56cbac1177ba770d052e2f@group.calendar.google.com",
-  LOCALIDADES:
-    "3e3188ab2f3260759a6d8c82b77bdd769824b3516f39a2078c0d66bb1f398425@group.calendar.google.com",
-  RPC: "475e6273639473791b28e6939abb3d5a8ca06be0d6a8de22a5eb2f29465d98e3@group.calendar.google.com",
-  PORTEIROS:
-    "a7f70358167561eeca994d7c598d96337173f576e85de8fe5cb86494a1c579c5@group.calendar.google.com",
-};
+  private constructor() {
+    this.calendars = [];
+  }
 
-const credentials = JSON.parse(
-  fs.readFileSync("src/config/secret.json", "utf-8")
-);
+  public static getInstance(): GoogleCalendarManager {
+    if (!GoogleCalendarManager.instance) {
+      GoogleCalendarManager.instance = new GoogleCalendarManager();
+    }
+    return GoogleCalendarManager.instance;
+  }
 
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: ["https://www.googleapis.com/auth/calendar"],
-});
+  public reAuth(credentials: ISecret) {
+    try {
+      this.auth = new google.auth.GoogleAuth({
+        credentials: credentials,
+        scopes: ["https://www.googleapis.com/auth/calendar"],
+      });
+      this.calendar = google.calendar({
+        version: "v3",
+        auth: this.auth,
+      });
+    } catch (error) {
+      throw "Credenciais de acesso para Google APIs inválidas!";
+    }
+  }
 
-const calendar = google.calendar({ version: "v3", auth });
+  public async managerCalendars(calendars: ICalendars[]) {
+    this.calendars = calendars;
+    await this.updateCalendars();
+  }
 
-export const actions = {
-  async updateEventGoogle(event: Evento) {
-    const calendarId =
-      agendas[event.list.toUpperCase() as keyof typeof agendas] ||
-      agendas.REGIONAL;
+  private async updateCalendars() {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    const calendars: ICalendars[] = [];
+    for (const cal of this.calendars) {
+      try {
+        const { data } = await this.calendar.calendars.get({
+          calendarId: cal.id,
+        });
+        calendars.push({
+          id: data.id || "",
+          summary: data.summary || "",
+          description: data.description || "",
+          timeZone: data.timeZone || "",
+          hidden: false,
+          selected: false,
+          valid: true,
+          sharedUsers: [],
+        });
+      } catch (error) {
+        calendars.push(cal);
+      }
+    }
+    this.calendars = calendars;
+    return this.calendars;
+  }
 
-    const { data } = await calendar.events.update({
+  public async shareCalendar(calendarId: string, emails: string[]) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    for (const email of emails) {
+      if (email.trim() && email.match(/@/)) {
+        await this.calendar.acl.insert({
+          calendarId,
+          requestBody: {
+            role: "owner",
+            scope: {
+              type: "user",
+              value: email,
+            },
+          },
+        });
+      }
+    }
+    console.log(`Agenda criada e compartilhada com sucesso!`);
+    console.log(`ID da Agenda: ${calendarId}`);
+  }
+
+  public async createCalendar(agenda: ICalendars) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    const calendarDetails: calendar_v3.Schema$Calendar = {
+      summary: agenda.summary,
+      description: agenda.description,
+      timeZone: "America/Sao_Paulo",
+    };
+
+    const createdCalendar = await this.calendar.calendars.insert({
+      requestBody: calendarDetails,
+    });
+
+    const calendarId = createdCalendar.data.id;
+    if (!calendarId) {
+      console.log("Agenda não criada!!!!");
+      return;
+    }
+    return calendarId;
+  }
+
+  public async deleteCalendar(calendarId: string) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    await this.calendar.calendars.delete({
+      calendarId,
+    });
+
+    console.log(`Agenda excluída com sucesso!`);
+  }
+
+  private async getIDAgenda(event: IEvento) {
+    let calendarId = this.calendars.find((e) => e.summary === event.list)?.id;
+    // if (!calendarId) {
+    //   calendarId =
+    //     (await this.createCalendar({
+    //       id: "",
+    //       summary: event.list,
+    //       description: `Agenda criada automaticamente para gerenciar ${event.list}`,
+    //       hidden: true,
+    //       selected: true,
+    //       sharedUsers: ["marco.aq7@gmail.com"],
+    //       timeZone: "America/Sao_Paulo",
+    //     })) || "";
+    // }
+    return calendarId;
+  }
+
+  public async updateOrCreateEvent(event: IEvento) {
+    if (event.gid) {
+      event = await this.updateEventGoogle(event);
+    } else {
+      event = await this.createEventGoogle(event);
+    }
+    return event;
+  }
+
+  public async updateEventGoogle(event: IEvento) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    const calendarId = await this.getIDAgenda(event);
+    event.date = new Date(event.date);
+    event.end = new Date(event.end || event.date);
+    event.updated = new Date();
+    const { data } = await this.calendar.events.update({
       calendarId,
       eventId: String(event.gid),
       requestBody: {
         summary: event.title,
         location: event.locale,
         description: event.desc,
-        end: { dateTime: event.end.toISOString() },
-        start: { dateTime: event.date.toISOString() },
+        end: { dateTime: event.end?.toISOString() },
+        start: { dateTime: event.date?.toISOString() },
       },
     });
-    return actions.toPDO(data);
-  },
-  async deleteEventGoogle(event: Evento) {
-    const calendarId =
-      agendas[event.list.toUpperCase() as keyof typeof agendas] ||
-      agendas.REGIONAL;
-    await calendar.events.delete({
-      calendarId,
-      eventId: String(event.gid),
-    });
-  },
-  async createEventGoogle(event: Evento) {
-    const calendarId =
-      agendas[event.list.toUpperCase() as keyof typeof agendas] ||
-      agendas.REGIONAL;
-    const start = event.date.toISOString();
+    return this.toPDO(data);
+  }
+
+  public async createEventGoogle(event: IEvento) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    const calendarId = await this.getIDAgenda(event);
+    event.date = new Date(event.date);
+    event.end = new Date(event.end || event.date);
+    event.updated = new Date();
+    const start = event.date?.toISOString();
     const end = event.end?.toISOString() || start;
 
     const payload: calendar_v3.Params$Resource$Events$Insert = {
@@ -92,170 +196,74 @@ export const actions = {
       console.log("Evento com recorrência: ", event, payload);
     }
 
-    const { data } = await calendar.events.insert(payload);
-    return actions.toPDO(data);
-  },
-  async getEventGoogle(startDate: Date, endDate: Date) {
-    const startDateCopy = new Date(startDate);
-    const endDateCopy = new Date(endDate);
-    startDateCopy.setHours(0, 0, 0, 0);
-    startDate.setHours(0, 0, 0, 0);
-    endDateCopy.setDate(endDateCopy.getDate() + 1);
-    endDateCopy.setHours(0, 0, 0, 0);
+    const { data } = await this.calendar.events.insert(payload);
+    return this.toPDO(data);
+  }
 
-    const googleEvents: Evento[] = [];
-    for (const [agenda, calendarId] of Object.entries(agendas)) {
+  public async deleteEvent(event: IEvento) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    const calendarId = await this.getIDAgenda(event);
+    await this.calendar.events.delete({
+      calendarId,
+      eventId: String(event.gid),
+    });
+    return event;
+  }
+
+  public async getEventGoogle(
+    dateFirst: Date,
+    dateLast: Date,
+    updatedMin?: Date
+  ) {
+    if (!this.calendar) throw "Não logado no GoogleApis!";
+    if (!this.calendars.length) throw "Nenhum calendário adicionado!";
+    const googleEvents: IEvento[] = [];
+
+    dateFirst.setHours(0, 0, 0, 0);
+    dateLast.setDate(dateLast.getDate() + 1);
+    dateLast.setHours(0, 0, 0, 0);
+
+    for (const calendar of this.calendars) {
       try {
-        const response = await calendar.events.list({
-          calendarId,
-          timeMin: startDate.toISOString(),
-          timeMax: endDate.toISOString(),
+        const response = await this.calendar.events.list({
+          calendarId: calendar.id,
+          timeMin: dateFirst.toISOString(),
+          timeMax: dateLast.toISOString(),
           singleEvents: true,
+          updatedMin: updatedMin?.toISOString(),
         });
-        response.data.items?.map(actions.toPDO).map((e) => {
+
+        response.data.items?.map(this.toPDO).map((e) => {
+          e.list = calendar.summary;
           googleEvents.push(e);
         });
-      } catch (error: any) {
-        console.log("Erro ao buscar na agenda: ", error.response.data);
+      } catch (error) {
+        console.log(
+          `Erro ao procurar eventos no calendário ${calendar.summary}. \nVerifique o GoogleServiceAccount ou ID da agenda`
+        );
       }
     }
     return googleEvents;
-  },
-  getDateBetween(eventos: Evento[]): DateRange {
-    const defaultDateRange: DateRange = {
-      dateFirst: new Date(),
-      dateLast: new Date(),
-    };
+  }
 
-    return eventos.reduce((acc: DateRange, e) => {
-      if (e.date) {
-        acc.dateFirst =
-          !acc.dateFirst || e.date < acc.dateFirst ? e.date : acc.dateFirst;
-        acc.dateLast =
-          !acc.dateLast || e.date > acc.dateLast ? e.date : acc.dateLast;
-      }
-      return acc;
-    }, defaultDateRange);
-  },
-  toPDO(e: calendar_v3.Schema$Event): Evento {
-    return <Evento>{
+  private toPDO(e: calendar_v3.Schema$Event): IEvento {
+    function parseDateTime(
+      dateTime: string | null | undefined
+    ): Date | undefined {
+      return dateTime ? new Date(dateTime) : undefined;
+    }
+    return <IEvento>{
       id: 0,
       list: e.organizer?.displayName,
       title: e.summary,
       locale: e.location,
       desc: e.description,
-      date: e.start?.dateTime ? new Date(e.start?.dateTime) : undefined,
-      end: e.end?.dateTime ? new Date(e.end?.dateTime) : undefined,
+      date: parseDateTime(e.start?.dateTime ?? e.start?.date),
+      end: parseDateTime(e.end?.dateTime ?? e.start?.date),
       updated: e.updated ? new Date(e.updated) : undefined,
       gid: e.id,
       maps: e.htmlLink?.replace(/.*eid=/, ""),
       recurring: `${!!e.recurringEventId}`,
     };
-  },
-};
-
-export async function syncWithGoogleCalendar(data: Evento[]) {
-  const updatedEvents: Evento[] = [];
-
-  try {
-    const { dateFirst, dateLast } = actions.getDateBetween(data);
-    const googleEvents = await actions.getEventGoogle(dateFirst, dateLast);
-
-    // Eventos existentes no google agenda e não localmente!
-    googleEvents
-      .filter(
-        (googleEvent) =>
-          !data.find(
-            (e) =>
-              e.gid === googleEvent.gid ||
-              (e.title === googleEvent.title &&
-                e.locale === googleEvent.locale &&
-                e.date.toISOString() === googleEvent.date.toISOString())
-          )
-      )
-      .forEach((e) => {
-        updatedEvents.push(e);
-      });
-
-    for (const event of data.filter((e) => e.end && e.end > new Date())) {
-      const googleEvent = googleEvents.find(
-        (e) =>
-          e.gid === event.gid ||
-          (e.list === event.list &&
-            e.title === event.title &&
-            e.locale === event.locale &&
-            e.date.toISOString() === event.date.toISOString())
-      );
-
-      try {
-        if (
-          googleEvent &&
-          event.gid !== googleEvent.gid &&
-          event.gid?.trim() !== ""
-        ) {
-          // Alterado de lista!
-          try {
-            actions.deleteEventGoogle(event);
-          } catch (error) {
-            error;
-          }
-          const e = await actions.createEventGoogle(event);
-          e.id = event.id;
-          updatedEvents.push(e);
-          console.log("Evento alterador de lista: ", event);
-        } else if (!googleEvent) {
-          const e = await actions.createEventGoogle(event);
-          e.id = event.id;
-          if (data) updatedEvents.push(e);
-          console.log("Criado no google agenda: ", e);
-        } else if (
-          googleEvent.updated &&
-          event.updated &&
-          googleEvent.updated.getTime() > event.updated.getTime()
-        ) {
-          console.log("Google mais recente, atualizar local: ", googleEvent);
-          googleEvent.id = event.id;
-          updatedEvents.push(googleEvent);
-          const index = data.findIndex((e) => e.gid === event.gid);
-          if (index !== -1) {
-            data[index] = googleEvent;
-          }
-        } else if (
-          googleEvent.updated &&
-          event.updated &&
-          googleEvent.updated.getTime() < event.updated.getTime()
-        ) {
-          console.log("Local mais recente, atualizar no google: ", event);
-          updatedEvents.push(event);
-          event.id = googleEvent.id;
-          await actions.updateEventGoogle(event);
-        } else {
-          // console.log("Arquivos são o mesmo!!!", event);
-        }
-      } catch (error) {
-        console.log("Erro ao atualizar objeto: ", error);
-      }
-    }
-    return updatedEvents;
-  } catch (error) {
-    console.error("Erro ao sincronizar:", error);
   }
 }
-
-// (async () => {
-//   try {
-//     const data: any[] = JSON.parse(
-//       fs.readFileSync("src/google/data.json", "utf-8") || "[]"
-//     );
-//     console.log("Iniciando processamento...", new Date());
-
-//     const result = await syncWithGoogleCalendar(data);
-//     fs.writeFileSync("src/google/data.json", JSON.stringify(result), "utf-8");
-//     console.log(
-//       "Sincronização concluída e dados salvos com sucesso.",
-//       new Date()
-//     );
-//   } catch (error) {
-//     console.error("Ocorreu um erro durante a sincronização:", error);
-//   }
-// })();

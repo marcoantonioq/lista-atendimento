@@ -1,100 +1,34 @@
-import * as sockets from "../../infra/http";
-import * as eventos from "../Eventos";
-import { Evento } from "@prisma/client";
-import { actions } from "./Agenda";
-import { config } from "../../config";
+import { IApp } from "../../app";
+import { GoogleCalendarManager } from "./Agenda";
 
-console.log("Google Agenda iniciado!");
+let dateFirst = new Date(new Date().getTime() - 60 * 60 * 1000);
+let dateLast = new Date(
+  new Date().getTime() + 80 * 24 * 60 * 60 * 1000
+);
+const calendar = GoogleCalendarManager.getInstance();
 
-sockets.onConnection(async (socket) => {
-  socket.on("reload", async () => {
-    console.log("Reload data google!");
-    await sync();
-  });
-});
-
-sockets.server.on("add", async (e: Evento) => {
-  try {
-    if (e.gid?.trim() === "") {
-      e.gid = (await actions.createEventGoogle(e)).gid;
-      console.log("Criado na agenda: ", e);
-    } else {
-      e.gid = (await actions.updateEventGoogle(e)).gid;
-      console.log("Atualizado na agenda: ", e);
-    }
-    await eventos.save(e);
-    if (e.recurring?.trim() !== "") {
-      await sync();
-    }
-    sockets.io.sockets.emit("eventos", await eventos.all());
-  } catch (error) {
-    console.log("Erro ao adicionar evento no google agenda: ", e, error);
-  }
-});
-
-sockets.server.on("removed", async (e: Evento) => {
-  try {
-    await actions.deleteEventGoogle(e);
-    sockets.io.sockets.emit("eventos", await eventos.all());
-  } catch (error) {
-    console.log("Erro ao remover o evento da agenda: ", e);
-  }
-});
-
-sockets.server.on("updated", async (data: Evento[]) => {
-  console.log("Atualizar eventos no google agenda: ", data.length);
-});
-
-/**
- * Remover eventos...
- */
-export async function removeEvents(date1: Date, date2: Date) {
-  const events = await actions.getEventGoogle(date1, date2);
-  const filtered = events.filter(
-    (e) => true || (e.locale && e.locale?.includes("SÃO PEDRO"))
+export async function googleSync (intervaloDias: number) {
+  console.log("Buscando atualizações no google...");
+  dateFirst = new Date(new Date().getTime() - 60 * 60 * 1000);
+  dateLast = new Date(
+    new Date().getTime() + intervaloDias * 24 * 60 * 60 * 1000
   );
-  for (const event of filtered) {
-    try {
-      console.log("Removendo evento: ", event);
-
-      await actions.deleteEventGoogle(event);
-    } catch (error) {
-      console.log("Erro ao remover eventos: ", event.title, event.locale);
-    }
-  }
+  return await calendar.getEventGoogle(dateFirst, dateLast);
 }
 
-/**
- * Baixar eventos do Google agenda
- */
-async function sync() {
-  const data = await eventos.all();
-  const googleEvents = await actions.getEventGoogle(
-    config.dateFirst,
-    config.dateLast
-  );
-  // Atualizar do google agenda para local!
-  for (const googleEvent of googleEvents) {
-    const item = data.find((e) => e.gid === googleEvent.gid);
-    if (item) {
-      googleEvent.id = item.id;
-    }
-    await eventos.save(googleEvent);
-  }
+export async function startGOOGLE (app: IApp) {
+  if (!app.google.secret.client_email) return;
+  console.log("MODULO: Google Agenda...");
+  try {
+    calendar.reAuth(app.google.secret);
+    await calendar.managerCalendars(app.google.calendars);
+    app.google.calendars = calendar.calendars;
+    app.eventos.items = await googleSync(app.eventos.intervaloDias);
 
-  // Remover eventos locais que foram removidos no google agenda
-  for (const e of data) {
-    const item = googleEvents.find((event) => event.gid === e.gid);
-    if (!item) {
-      console.log(
-        "Evento foi removido do google e será removido localmente: ",
-        e
-      );
-      await eventos.remove(e.id);
-    }
+    setInterval(async () => {
+      app.eventos.items = await googleSync(app.eventos.intervaloDias);
+    }, 24 * 60 * 60 * 1000);
+  } catch (error) {
+    console.log("Erro ao iniciar o Google Agenda: ", error);
   }
-  sockets.io.sockets.emit("eventos", await eventos.all());
 }
-
-setInterval(sync, 60000);
-sync();
