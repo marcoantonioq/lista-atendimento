@@ -2,7 +2,7 @@ FROM node:20
 
 RUN apt update && apt install git -y 
 
-RUN git clone https://github.com/marcoantonioq/lista-atendimento.git /app
+RUN git clone --depth=1 https://github.com/marcoantonioq/lista-atendimento.git /app
 
 WORKDIR /app/client
 COPY client .
