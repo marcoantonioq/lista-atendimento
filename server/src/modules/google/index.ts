@@ -1,4 +1,5 @@
 import { IApp } from "../../app";
+import { salvarStore } from "../localstore";
 import { GoogleCalendarManager } from "./Agenda";
 
 let dateFirst = new Date(new Date().getTime() - 60 * 60 * 1000);
@@ -27,6 +28,7 @@ export async function startGOOGLE (app: IApp) {
 
     setInterval(async () => {
       app.eventos.items = await googleSync(app.eventos.intervaloDias);
+      salvarStore(app)
     }, 24 * 60 * 60 * 1000);
   } catch (error) {
     console.log("Erro ao iniciar o Google Agenda: ", error);

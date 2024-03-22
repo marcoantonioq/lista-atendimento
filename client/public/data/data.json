@@ -990,14 +990,14 @@
         "id": 0,
         "list": "LOCALIDADES",
         "title": "REUNIÃO DE EVANGELIZAÇÃO",
-        "locale": "GOIÁS - REGIÃO BOM SUCESSO",
-        "desc": "Resp. Adivair Francelino Gonçalves",
-        "date": "2024-04-05T22:30:00.000Z",
+        "locale": "GOIÁS - ENTRADA BOM SUCESSO",
+        "desc": "SRA. JOELMA E SR. DEMILSON<BR>RESP. IR. JONATHAN<BR>LOCAL: HTTPS://MAPS.APP.GOO.GL/M3EC2KE1WIQTNZUF6",
+        "date": "2024-04-05T22:00:00.000Z",
         "end": "2024-04-06T00:00:00.000Z",
-        "updated": "2023-12-27T14:43:58.874Z",
-        "gid": "56sdjgl9vihm0bpbs3tueaep0q_20240405T223000Z",
-        "maps": "NTZzZGpnbDl2aWhtMGJwYnMzdHVlYWVwMHFfMjAyNDA0MDVUMjIzMDAwWiAzZTMxODhhYjJmMzI2MDc1OWE2ZDhjODJiNzdiZGQ3Njk4MjRiMzUxNmYzOWEyMDc4YzBkNjZiYjFmMzk4NDI1QGc",
-        "recurring": "true"
+        "updated": "2024-03-22T16:31:29.256Z",
+        "gid": "1oh1e1ds7sd8tlvhbnjiivbn3c",
+        "maps": "MW9oMWUxZHM3c2Q4dGx2aGJuamlpdmJuM2MgM2UzMTg4YWIyZjMyNjA3NTlhNmQ4YzgyYjc3YmRkNzY5ODI0YjM1MTZmMzlhMjA3OGMwZDY2YmIxZjM5ODQyNUBn",
+        "recurring": "false"
       },
       {
         "id": 0,
@@ -1692,19 +1692,6 @@
         "id": 0,
         "list": "DARPE",
         "title": "LAR DE IDOSOS",
-        "locale": "FAINA - LAR DO IDOSO DONA LEONTINA GOBBE CUNHA",
-        "desc": "Ir. Maciel Antônio de Oliveira\nIR. PAULO VINICIOS SALES DE ARAUJO",
-        "date": "2024-03-21T22:00:00.000Z",
-        "end": "2024-03-22T00:00:00.000Z",
-        "updated": "2023-12-26T01:48:09.340Z",
-        "gid": "4hpv6vkb9khueiudf2o5s787c4_20240321T220000Z",
-        "maps": "NGhwdjZ2a2I5a2h1ZWl1ZGYybzVzNzg3YzRfMjAyNDAzMjFUMjIwMDAwWiBiZDczYjhmZGMwZjg5ZjMzMzkxODk4YzM5NmNjOTA1MDdhYzg3MGQyMmU1NmNiYWMxMTc3YmE3NzBkMDUyZTJmQGc",
-        "recurring": "true"
-      },
-      {
-        "id": 0,
-        "list": "DARPE",
-        "title": "LAR DE IDOSOS",
         "locale": "JUSSARA - Lar Beneficiente Bom Jesus",
         "desc": "Ir. Lucélio Rosa dos Santos\nIr. Valter Junior Vieira da Silva",
         "date": "2024-03-23T18:30:00.000Z",
@@ -2193,19 +2180,6 @@
         "updated": "2023-12-26T01:48:09.340Z",
         "gid": "dkgs2c3v8aeamfso44ne4428h0_20240608T180000Z",
         "maps": "ZGtnczJjM3Y4YWVhbWZzbzQ0bmU0NDI4aDBfMjAyNDA2MDhUMTgwMDAwWiBiZDczYjhmZGMwZjg5ZjMzMzkxODk4YzM5NmNjOTA1MDdhYzg3MGQyMmU1NmNiYWMxMTc3YmE3NzBkMDUyZTJmQGc",
-        "recurring": "true"
-      },
-      {
-        "id": 0,
-        "list": "PORTEIROS ",
-        "title": "PORTEIRO",
-        "locale": "GOIAS - CENTRAL",
-        "desc": "Sebastião",
-        "date": "2024-03-21T21:30:00.000Z",
-        "end": "2024-03-22T00:00:00.000Z",
-        "updated": "2024-03-14T19:33:15.546Z",
-        "gid": "a62uolhp40hjbq8pjbfqph2v4q_20240321T213000Z",
-        "maps": "YTYydW9saHA0MGhqYnE4cGpiZnFwaDJ2NHFfMjAyNDAzMjFUMjEzMDAwWiBhN2Y3MDM1ODE2NzU2MWVlY2E5OTRkN2M1OThkOTYzMzcxNzNmNTc2ZTg1ZGU4ZmU1Y2I4NjQ5NGExYzU3OWM1QGc",
         "recurring": "true"
       },
       {
@@ -3038,6 +3012,19 @@
         "updated": "2024-03-14T17:38:28.398Z",
         "gid": "pbogvkbp73un0qjpu53bo254r3_20240619T213000Z",
         "maps": "cGJvZ3ZrYnA3M3VuMHFqcHU1M2JvMjU0cjNfMjAyNDA2MTlUMjEzMDAwWiBhN2Y3MDM1ODE2NzU2MWVlY2E5OTRkN2M1OThkOTYzMzcxNzNmNTc2ZTg1ZGU4ZmU1Y2I4NjQ5NGExYzU3OWM1QGc",
+        "recurring": "true"
+      },
+      {
+        "id": 0,
+        "list": "PORTEIROS ",
+        "title": "PORTEIRO",
+        "locale": "GOIAS - CENTRAL",
+        "desc": "Sebastião",
+        "date": "2024-06-20T21:30:00.000Z",
+        "end": "2024-06-21T00:00:00.000Z",
+        "updated": "2024-03-14T19:33:15.546Z",
+        "gid": "a62uolhp40hjbq8pjbfqph2v4q_20240620T213000Z",
+        "maps": "YTYydW9saHA0MGhqYnE4cGpiZnFwaDJ2NHFfMjAyNDA2MjBUMjEzMDAwWiBhN2Y3MDM1ODE2NzU2MWVlY2E5OTRkN2M1OThkOTYzMzcxNzNmNTc2ZTg1ZGU4ZmU1Y2I4NjQ5NGExYzU3OWM1QGc",
         "recurring": "true"
       },
       {

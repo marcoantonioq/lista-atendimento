@@ -15,11 +15,11 @@ const PATH_DATA3 = path.join(
   "../../../../client/public/data/data.json"
 );
 
-async function saveDataToFile (path: string, values: string) {
+async function saveDataToFile(path: string, values: string) {
   await fs.promises.writeFile(path, values);
 }
 
-async function readDataFromFile (path: string, values: string) {
+async function readDataFromFile(path: string, values: string) {
   if (fs.existsSync(path)) {
     return JSON.parse(await fs.promises.readFile(path, "utf-8"));
   } else {
@@ -28,7 +28,27 @@ async function readDataFromFile (path: string, values: string) {
   }
 }
 
-export async function startSTORE (app: IApp) {
+export async function salvarStore(app: IApp) {
+  sortEvento(app);
+  try {
+    console.log("Salvando lista...");
+    app.system.save = true;
+    await saveDataToFile(PATH_CONFIG, JSON.stringify(app, null, 2));
+    const data = {
+      eventos: {
+        items: app.eventos.items,
+      },
+    };
+    await saveDataToFile(PATH_DATA, JSON.stringify(data, null, 2));
+    await saveDataToFile(PATH_DATA2, JSON.stringify(data, null, 2));
+    await saveDataToFile(PATH_DATA3, JSON.stringify(data, null, 2));
+    app.system.save = false;
+  } catch (error) {
+    console.log("LocalStore: Erro ao salvar aquivo: ", error);
+  }
+}
+
+export async function startSTORE(app: IApp) {
   console.log("MODULO: Storage");
   try {
     const data = await readDataFromFile(
@@ -45,30 +65,11 @@ export async function startSTORE (app: IApp) {
         ...event,
         date: new Date(event.date),
         end: event.end ? new Date(event.end) : undefined,
-        updated: event.updated ? new Date(event.updated) : undefined
+        updated: event.updated ? new Date(event.updated) : undefined,
       }));
     }
 
-    watchEffect(async () => {
-      app.eventos.items.map((e) => [e.gid, e.desc, e.list, e.locale, e.title]);
-      sortEvento(app);
-      try {
-        console.log("Salvando lista...");
-        app.system.save = false;
-        await saveDataToFile(PATH_CONFIG, JSON.stringify(app, null, 2));
-        const data = {
-          eventos: {
-            items: app.eventos.items
-          }
-        };
-        await saveDataToFile(PATH_DATA, JSON.stringify(data, null, 2));
-        await saveDataToFile(PATH_DATA2, JSON.stringify(data, null, 2));
-        await saveDataToFile(PATH_DATA3, JSON.stringify(data, null, 2));
-      } catch (error) {
-        console.log("LocalStore: Erro ao salvar aquivo: ", error);
-        console.log("LocalStore: Erro ao salvar aquivo: ", error);
-      }
-    });
+      salvarStore(app);
   } catch (error) {
     console.log("Erro ao acessar arquivo:", PATH_CONFIG);
   }

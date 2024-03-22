@@ -5,6 +5,7 @@ import { sortEvento } from "../evento/sortEventos";
 import { updateApp } from "../../helpers/updateApp";
 import { restartApp } from "../../helpers/restartApp";
 import { googleSync } from "../google";
+import { salvarStore } from "../localstore";
 
 const APP = {
   APP: "app",
@@ -16,12 +17,12 @@ const APP = {
   SAVE: "save",
   REMOVE: "remove",
   RELOAD: "reload",
-  REBOOT: "reboot"
+  REBOOT: "reboot",
 };
 
 const calendar = GoogleCalendarManager.getInstance();
 
-export function setupSocketIO (io: Server, app: IApp): void {
+export function setupSocketIO(io: Server, app: IApp): void {
   io.on(APP.CONNECT, async (socket: Socket) => {
     const { token } = socket.handshake.auth;
 
@@ -38,10 +39,15 @@ export function setupSocketIO (io: Server, app: IApp): void {
     }
 
     try {
-      const handleSaveEvent = async (evento: IEvento, callback: (evento: IEvento) => void) => {
+      const handleSaveEvent = async (
+        evento: IEvento,
+        callback: (evento: IEvento) => void
+      ) => {
         try {
           const savedEvent = await calendar.updateOrCreateEvent(evento);
-          app.eventos.items = app.eventos.items.filter((e) => e.gid !== evento.gid);
+          app.eventos.items = app.eventos.items.filter(
+            (e) => e.gid !== evento.gid
+          );
           app.eventos.items.push(savedEvent);
           sortEvento(app);
           if (evento.recurring && !evento.gid) {
@@ -51,20 +57,25 @@ export function setupSocketIO (io: Server, app: IApp): void {
           }
           console.log("Evento salvo no Google:", savedEvent);
           callback(savedEvent);
-          app.system.save = true;
+          salvarStore(app);
         } catch (error) {
           handleEventError("Erro ao salvar evento", String(error), io);
         }
       };
 
-      const handleRemoveEvent = async (evento: IEvento, callback: (evento: IEvento) => void) => {
+      const handleRemoveEvent = async (
+        evento: IEvento,
+        callback: (evento: IEvento) => void
+      ) => {
         try {
           try {
             const removedEvent = await calendar.deleteEvent(evento);
-            app.eventos.items = app.eventos.items.filter((e) => e.gid !== evento.gid);
+            app.eventos.items = app.eventos.items.filter(
+              (e) => e.gid !== evento.gid
+            );
             io.emit(APP.EVENTOS, app.eventos.items);
             callback(removedEvent);
-            app.system.save = true;
+            salvarStore(app);
             console.log("Evento removido no Google:", removedEvent);
           } catch (error) {
             console.log("Evento não existe no Google!");
@@ -75,10 +86,13 @@ export function setupSocketIO (io: Server, app: IApp): void {
         }
       };
 
-      const handleAppSave = async (newApp: IApp, callback: (app: IApp) => void) => {
+      const handleAppSave = async (
+        newApp: IApp,
+        callback: (app: IApp) => void
+      ) => {
         try {
           updateApp(app, newApp);
-          app.system.save = true;
+          salvarStore(app);
           callback(app);
           io.emit(APP.APP, app);
         } catch (error) {
@@ -108,7 +122,11 @@ export function setupSocketIO (io: Server, app: IApp): void {
         restartApp();
       };
 
-      const handleEventError = (message: string, error: string, io: Server): void => {
+      const handleEventError = (
+        message: string,
+        error: string,
+        io: Server
+      ): void => {
         const msg = `${message}: ${error}`;
         io.emit(APP.ERROR, { msg });
       };
