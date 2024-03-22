@@ -1,9 +1,11 @@
 <template>
-  <q-page>
-    <q-btn @click="askForNotificationPermission" class="notification-button">
-      <q-icon name="notifications" />
-    </q-btn>
-  </q-page>
+  <q-btn
+    v-if="!notificationPermissionGranted"
+    @click="askForNotificationPermission"
+    class="notification-button"
+  >
+    <q-icon name="notifications" />
+  </q-btn>
 </template>
 
 <script>
@@ -29,7 +31,16 @@ export default {
       Notification.requestPermission().then((permission) => {
         if (permission === 'granted') {
           this.notificationPermissionGranted = true;
-          const notification = new Notification('Hi there!');
+          const notification = new Notification('Lista de Atendimento', {
+            body: 'Corpo da Notificação',
+            icon: 'icons/icon-512x512.png',
+            badge: 'icons/icon-512x512.png',
+            vibrate: true,
+          });
+
+          notification.onclick = function () {
+            console.log('Notificação clicada!');
+          };
         }
       });
     },
