@@ -39,6 +39,7 @@ export async function startSTORE (app: IApp) {
       app.git = data.git;
       app.google = data.google;
       app.system = data.system;
+      app.system.rebooting = false;
       app.eventos = data.eventos;
       app.eventos.items = app.eventos.items.map((event: IEvento) => ({
         ...event,

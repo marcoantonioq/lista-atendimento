@@ -43,6 +43,7 @@ export async function startHTTP (app: IApp) {
     if (app?.system?.rebooting) {
       server.close();
       console.log("Porta do servidor HTTP fechada! Reiniciando o servidor");
+      app.system.rebooting = false
     }
   });
 }
