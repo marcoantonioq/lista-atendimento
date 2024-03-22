@@ -7,7 +7,6 @@
       <q-page>
         <router-view />
         <div class="off" v-if="!settings.connected">Você está off-line</div>
-        <NotifyComponent />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -15,8 +14,6 @@
 
 <script setup lang="ts">
 import { settings } from 'src/settings';
-import NotifyComponent from '../components/NotifyComponent.vue';
-
 settings;
 </script>
 
