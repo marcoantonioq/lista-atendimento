@@ -10,22 +10,15 @@
       {{ hora(event.date) }}
     </td>
     <td>
-      <div class="">
-        {{ event.locale }}
-        <q-icon
-          class="print-hide"
-          v-if="event.recurring"
-          name="event_repeat"
-          style="color: #9e9e9e"
-        />
-      </div>
+      {{ event.locale }}
+      <q-icon
+        class="print-hide"
+        v-if="event.recurring"
+        name="event_repeat"
+        style="color: #9e9e9e"
+      />
     </td>
-    <td>
-      <div
-        :style="event.desc ? '' : 'display: none;'"
-        v-html="event.desc.replace(/(;\n|\n)/gi, '</br>')"
-      ></div>
-    </td>
+    <td v-if="event.desc" v-html="formatDesc(event.desc)"></td>
   </tr>
 </template>
 
@@ -34,6 +27,10 @@ import { IEvento } from 'src/app';
 
 const prop = defineProps<{ event: IEvento }>();
 const event = prop.event;
+
+function formatDesc(desc: string) {
+  return desc.replace(/(\r\n|\n|\r)/g, '<br>');
+}
 
 function diaSemana(date?: Date) {
   if (!(date instanceof Date) || isNaN(date.getTime())) {

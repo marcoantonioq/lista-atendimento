@@ -268,6 +268,7 @@ async function reload() {
 }
 
 div.table {
+  width: 100vw;
   max-width: 100vw;
   overflow-x: auto;
 }
