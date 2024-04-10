@@ -12,8 +12,8 @@
     <td>
       {{ event.locale }}
       <q-icon
+        v-if="event.recurring?.includes('true')"
         class="print-hide"
-        v-if="event.recurring"
         name="event_repeat"
         style="color: #9e9e9e"
       />

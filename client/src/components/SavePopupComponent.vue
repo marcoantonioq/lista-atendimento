@@ -149,6 +149,7 @@ watch(
       if (!data.selected.list) {
         data.selected.list = localStorage.getItem('defaultList') || '';
       }
+      data.rrule = '';
     }
   }
 );

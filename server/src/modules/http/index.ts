@@ -7,7 +7,7 @@ import { setupSocketIO } from "./socket";
 import { IApp } from "../../app";
 import { watchEffect } from "vue";
 
-export async function startHTTP (app: IApp) {
+export async function startHTTP(app: IApp) {
   console.log("MODULO: HTTP");
   const port = app.system?.port || "3000";
   const appExpress: Express = express();
@@ -27,8 +27,8 @@ export async function startHTTP (app: IApp) {
     }
   );
 
-  await setupRoutes(appExpress, app);
-  await setupSocketIO(io, app);
+  setupRoutes(appExpress, app);
+  setupSocketIO(io, app);
 
   server.listen(port, () => {
     const hr =

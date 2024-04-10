@@ -78,7 +78,8 @@ module.exports = configure(function (/* ctx */) {
       // components: [],
       // directives: [],
       plugins: [
-        'Notify'
+        'Notify',
+        'Loading'
       ]
     },
 

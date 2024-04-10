@@ -69,7 +69,7 @@ export async function startSTORE(app: IApp) {
       }));
     }
 
-      salvarStore(app);
+    salvarStore(app);
   } catch (error) {
     console.log("Erro ao acessar arquivo:", PATH_CONFIG);
   }
