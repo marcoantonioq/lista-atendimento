@@ -239,7 +239,7 @@ export class GoogleCalendarManager {
         });
       } catch (error) {
         console.log(
-          `Erro ao procurar eventos no calendário ${calendar.summary}. \nVerifique o GoogleServiceAccount ou ID da agenda`
+          `Erro ao procurar eventos no calendário ${calendar.summary}. \nVerifique o GoogleServiceAccount ou ID da agenda. ${JSON.stringify(calendar, null, 2)}`
         );
       }
     }
