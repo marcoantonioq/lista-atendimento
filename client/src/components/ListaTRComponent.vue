@@ -1,12 +1,12 @@
 <template>
   <tr>
-    <td :style="isValidDate(event.date) ? '' : 'display: none;'">
+    <td :style="showDate(event) ? '' : 'display: none;'">
       <b> {{ dia(event.date) }}/{{ mes(event.date) }}</b>
     </td>
-    <td :style="isValidDate(event.date) ? '' : 'display: none;'">
+    <td :style="showDate(event) ? '' : 'display: none;'">
       {{ diaSemana(event.date) }}
     </td>
-    <td :style="event.date ? '' : 'display: none;'">
+    <td :style="showDate(event) ? '' : 'display: none;'">
       {{ hora(event.date) }}
     </td>
     <td>
@@ -27,6 +27,10 @@ import { IEvento } from 'src/app';
 
 const prop = defineProps<{ event: IEvento }>();
 const event = prop.event;
+
+function showDate(event: IEvento){
+  return isValidDate(event.date) && !['AVISOS À IRMANDADE'].includes(event.title.toUpperCase())
+}
 
 function formatDesc(desc: string) {
   return desc.replace(/(\r\n|\n|\r)/g, '<br>');
