@@ -1,14 +1,14 @@
 import { IApp } from "../../app";
 import { salvarStore } from "../localstore";
 import { GoogleCalendarManager } from "./Agenda";
+import { GoogleSheetManager } from "./Sheet";
 
 let dateFirst = new Date(new Date().getTime() - 60 * 60 * 1000);
-let dateLast = new Date(
-  new Date().getTime() + 80 * 24 * 60 * 60 * 1000
-);
+let dateLast = new Date(new Date().getTime() + 80 * 24 * 60 * 60 * 1000);
 const calendar = GoogleCalendarManager.getInstance();
+const sheet = GoogleSheetManager.getInstance();
 
-export async function googleSync (intervaloDias: number) {
+export async function googleSync(intervaloDias: number) {
   console.log("Buscando atualizações no google...");
   dateFirst = new Date(new Date().getTime() - 60 * 60 * 1000);
   dateLast = new Date(
@@ -17,7 +17,14 @@ export async function googleSync (intervaloDias: number) {
   return await calendar.getEventGoogle(dateFirst, dateLast);
 }
 
-export async function startGOOGLE (app: IApp) {
+async function saveDataStore(app: IApp) {
+  app.eventos.items = await googleSync(app.eventos.intervaloDias);
+  salvarStore(app);
+  console.log("Dado: ", app.eventos.items)
+  // sheet.updateSheetData("13sjbh4fRi_CiSET4ARbZA3S4pTugDTEOTYMWy8YGr4w", "Lista", [app.eventos.items])
+}
+
+export async function startGOOGLE(app: IApp) {
   if (!app.google.secret.client_email) return;
   console.log("MODULO: Google Agenda...");
   try {
@@ -26,10 +33,12 @@ export async function startGOOGLE (app: IApp) {
     app.google.calendars = calendar.calendars;
     app.eventos.items = await googleSync(app.eventos.intervaloDias);
 
+    await saveDataStore(app);
+
     setInterval(async () => {
-      app.eventos.items = await googleSync(app.eventos.intervaloDias);
-      salvarStore(app)
+      await saveDataStore(app);
     }, 24 * 60 * 60 * 1000);
+
   } catch (error) {
     console.log("Erro ao iniciar o Google Agenda: ", error);
   }
