@@ -20,7 +20,7 @@ export async function googleSync(intervaloDias: number) {
 async function saveDataStore(app: IApp) {
   app.eventos.items = await googleSync(app.eventos.intervaloDias);
   salvarStore(app);
-  console.log("Dado: ", app.eventos.items)
+  console.log("Dados para salvar no google sheet: ", app.eventos.items.length)
   // sheet.updateSheetData("13sjbh4fRi_CiSET4ARbZA3S4pTugDTEOTYMWy8YGr4w", "Lista", [app.eventos.items])
 }
 
