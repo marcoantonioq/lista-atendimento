@@ -7,6 +7,7 @@
       <q-page>
         <router-view />
         <div class="off" v-if="!settings.connected">Você está off-line</div>
+        <PushComponent/>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -14,6 +15,7 @@
 
 <script setup lang="ts">
 import { settings } from 'src/settings';
+import PushComponent from '../components/PushComponent.vue'
 settings;
 </script>
 

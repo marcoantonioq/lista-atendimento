@@ -58,6 +58,15 @@ export interface IApp {
     reloading: boolean;
     calendars: ICalendars[];
     shared: string[];
+    firebase: {
+      apiKey: string;
+      authDomain: string;
+      projectId: string;
+      storageBucket: string;
+      messagingSenderId: string;
+      appId: string;
+      measurementId: string;
+    };
     tz: string;
   };
   eventos: {
@@ -96,6 +105,15 @@ export const app = reactive<IApp>({
       auth_provider_x509_cert_url: '',
       client_x509_cert_url: '',
       universe_domain: '',
+    },
+    firebase: {
+      apiKey: '',
+      authDomain: '',
+      projectId: '',
+      storageBucket: '',
+      messagingSenderId: '',
+      appId: '',
+      measurementId: '',
     },
     reloading: false,
     calendars: [],

@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive } from 'vue';
 
 export interface IEvento {
   id: number | undefined;
@@ -58,6 +58,15 @@ export interface IApp {
     reloading: boolean;
     calendars: ICalendars[];
     shared: string[];
+    firebase: {
+      apiKey: string;
+      authDomain: string;
+      projectId: string;
+      storageBucket: string;
+      messagingSenderId: string;
+      appId: string;
+      measurementId: string;
+    };
     tz: string;
   };
   eventos: {
@@ -70,43 +79,52 @@ export interface IApp {
 }
 
 export const app = reactive<IApp>({
-  id: "app",
+  id: 'app',
   git: {
-    owner: "",
-    repo: "",
-    token: "",
-    path: ""
+    owner: '',
+    repo: '',
+    token: '',
+    path: '',
   },
   system: {
     port: 3000,
-    token: "",
+    token: '',
     rebooting: false,
-    save: true
+    save: true,
   },
   google: {
     secret: {
-      type: "",
-      project_id: "",
-      private_key_id: "",
-      private_key: "",
-      client_email: "",
-      client_id: "",
-      auth_uri: "",
-      token_uri: "",
-      auth_provider_x509_cert_url: "",
-      client_x509_cert_url: "",
-      universe_domain: ""
+      type: '',
+      project_id: '',
+      private_key_id: '',
+      private_key: '',
+      client_email: '',
+      client_id: '',
+      auth_uri: '',
+      token_uri: '',
+      auth_provider_x509_cert_url: '',
+      client_x509_cert_url: '',
+      universe_domain: '',
+    },
+    firebase: {
+      apiKey: '',
+      authDomain: '',
+      projectId: '',
+      storageBucket: '',
+      messagingSenderId: '',
+      appId: '',
+      measurementId: '',
     },
     reloading: false,
     calendars: [],
     shared: [],
-    tz: "America/Sao_Paulo"
+    tz: 'America/Sao_Paulo',
   },
   eventos: {
     intervaloDias: 100,
     items: [],
     titles: [],
     locales: [],
-    desc: []
-  }
+    desc: [],
+  },
 });

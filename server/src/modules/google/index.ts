@@ -28,8 +28,12 @@ export async function startGOOGLE(app: IApp) {
   if (!app.google.secret.client_email) return;
   console.log("MODULO: Google Agenda...");
   try {
+
     calendar.reAuth(app.google.secret);
+    sheet.reAuth(app.google.secret);
+
     await calendar.managerCalendars(app.google.calendars);
+
     app.google.calendars = calendar.calendars;
     app.eventos.items = await googleSync(app.eventos.intervaloDias);
 
