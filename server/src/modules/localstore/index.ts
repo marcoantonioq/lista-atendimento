@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { IApp, IEvento } from "../../app";
-import { watchEffect } from "vue";
 import { sortEvento } from "../evento/sortEventos";
 
 const PATH_CONFIG = path.join(__dirname, "../../../../config/config.json");
@@ -33,16 +32,20 @@ export async function salvarStore(app: IApp) {
   try {
     console.log("Salvando lista...");
     app.system.save = true;
-    if(!!app.system.token){
+
+    if(!app.system.token){
       console.log("Erro ao salvar. Valores indefinidos!")
       return
     }
+
     await saveDataToFile(PATH_CONFIG, JSON.stringify(app, null, 2));
+
     const data = {
       eventos: {
         items: app.eventos.items,
       },
     };
+
     await saveDataToFile(PATH_DATA, JSON.stringify(data, null, 2));
     await saveDataToFile(PATH_DATA2, JSON.stringify(data, null, 2));
     await saveDataToFile(PATH_DATA3, JSON.stringify(data, null, 2));
