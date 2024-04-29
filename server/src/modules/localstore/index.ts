@@ -33,6 +33,10 @@ export async function salvarStore(app: IApp) {
   try {
     console.log("Salvando lista...");
     app.system.save = true;
+    if(!!app.system.token){
+      console.log("Erro ao salvar. Valores indefinidos!")
+      return
+    }
     await saveDataToFile(PATH_CONFIG, JSON.stringify(app, null, 2));
     const data = {
       eventos: {
