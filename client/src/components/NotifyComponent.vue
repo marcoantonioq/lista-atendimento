@@ -18,6 +18,7 @@ export default {
   },
   mounted() {
     this.checkNotificationSupport();
+    this.askForNotificationPermission();
   },
   methods: {
     checkNotificationSupport() {

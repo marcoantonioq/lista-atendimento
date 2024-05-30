@@ -117,29 +117,3 @@ socket?.on('disconnect', () => {
   settings.connected = false;
   settings.admin = false;
 });
-
-// // Solicita permissão para enviar notificações
-// Notification.requestPermission().then(function(permission) {
-//   if (permission === 'granted') {
-//     console.log('Permissão para enviar notificações concedida!');
-//   } else {
-//     console.warn('Permissão para enviar notificações não concedida.');
-//   }
-// });
-
-// // Função para enviar uma notificação
-// function enviarNotificacao() {
-//   if (Notification.permission === 'granted') {
-//     const notification = new Notification('Título da Notificação', {
-//       body: 'Corpo da Notificação',
-//       icon: 'icons/icon-192x192.png'
-//     });
-
-//     notification.onclick = function() {
-//       console.log('Notificação clicada!');
-//     };
-//   } else {
-//     console.warn('Permissão para enviar notificações não concedida.');
-//   }
-// }
-// enviarNotificacao()
