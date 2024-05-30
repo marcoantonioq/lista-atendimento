@@ -8,17 +8,22 @@ const routes: RouteRecordRaw[] = [
       { path: '/', component: () => import('pages/IndexPage.vue') },
       {
         path: '/lista/:local?',
-        name: 'lista',
+        name: 'LISTA',
         component: () => import('pages/ListasPage.vue'),
       },
       {
         path: '/darpe',
-        name: 'darpe',
+        name: 'DARPE',
         component: () => import('pages/DarpePage.vue'),
       },
       {
+        path: '/calendar',
+        name: 'Calendário',
+        component: () => import('pages/CalendarPage.vue'),
+      },
+      {
         path: '/config',
-        name: 'config',
+        name: 'CONFIG',
         component: () => import('pages/ConfigPage.vue'),
       },
       {
