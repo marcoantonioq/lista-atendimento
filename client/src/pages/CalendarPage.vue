@@ -225,9 +225,9 @@ async function reload() {
 </script>
 
 <style scoped lang="scss">
-#lista {
-  text-transform: uppercase;
-}
+// #lista {
+// text-transform: uppercase;
+// }
 .icon {
   width: 23px;
   cursor: pointer;
