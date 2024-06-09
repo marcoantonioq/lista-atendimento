@@ -36,7 +36,7 @@
 
     <div
       v-for="title in data.titles.filter(
-        (e) => !['VIAGENS MISSIONÁRIAS'].includes(e)
+        (e) => !['VIAGENS MISSIONÁRIAS', 'OBRA DA PIEDADE'].includes(e)
       )"
       :key="title"
     >
