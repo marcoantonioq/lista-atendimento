@@ -19,28 +19,28 @@
                     .sort()
                 "
                 v-model="data.selected.list"
-                @update="data.selected.list = $event.toUpperCase()"
+                @update="data.selected.list = $event"
               />
 
               <suggestion-component
                 label="Titulo"
                 :list="app.eventos.titles"
                 v-model="data.selected.title"
-                @update="data.selected.title = $event.toUpperCase()"
+                @update="data.selected.title = $event"
               />
 
               <suggestion-component
                 label="Local"
                 :list="app.eventos.locales"
                 v-model="data.selected.locale"
-                @update="data.selected.locale = $event.toUpperCase()"
+                @update="data.selected.locale = $event"
               />
 
               <suggestion-description-component
                 label="Descrição"
                 :list="app.eventos.desc"
                 v-model="data.selected.desc"
-                @update="data.selected.desc = $event.toUpperCase()"
+                @update="data.selected.desc = $event"
               />
 
               <q-expansion-item
