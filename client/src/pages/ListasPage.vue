@@ -34,12 +34,7 @@
       <q-btn to="/" dense flat icon="close" />
     </div>
 
-    <div
-      v-for="title in data.titles.filter(
-        (e) => !['VIAGENS MISSIONÁRIAS', 'OBRA DA PIEDADE'].includes(e)
-      )"
-      :key="title"
-    >
+    <div v-for="title in data.titles" :key="title">
       <table :summary="String(title)">
         <thead>
           <th colspan="5">{{ title }}</th>

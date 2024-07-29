@@ -6,7 +6,7 @@
     <td :style="showDate(event) ? '' : 'display: none;'">
       {{ diaSemana(event.date) }}
     </td>
-    <td :style="showDate(event) ? '' : 'display: none;'">
+    <td :style="showHour(event) ? '' : 'display: none;'">
       {{ hora(event.date) }}
     </td>
     <td>
@@ -28,8 +28,18 @@ import { IEvento } from 'src/app';
 const prop = defineProps<{ event: IEvento }>();
 const event = prop.event;
 
-function showDate(event: IEvento){
-  return isValidDate(event.date) && !['AVISOS À IRMANDADE'].includes(event.title.toUpperCase())
+function showDate(event: IEvento) {
+  return (
+    isValidDate(event.date) &&
+    !['AVISOS À IRMANDADE'].includes(event.title.toUpperCase())
+  );
+}
+
+function showHour(event: IEvento) {
+  return (
+    showDate(event) &&
+    !['VIAGENS MISSIONÁRIAS'].includes(event.title.toUpperCase())
+  );
 }
 
 function formatDesc(desc: string) {
