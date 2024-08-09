@@ -34,11 +34,10 @@ export async function saveEventos(updated: IEvento[]): Promise<IEvento[]> {
 }
 
 export async function loadEventsAxios(): Promise<IEvento[]> {
-  try {
-    const cacheName = 'eventDataCache';
-    const url = '/data/data.json';
-    const cacheResponse = await caches.match(url);
+  const url = '/data/data.json';
 
+  try {
+    const cacheResponse = await caches.match(url);
     if (cacheResponse) {
       try {
         console.log('Carregando dados da cache do PWA...');
@@ -48,12 +47,21 @@ export async function loadEventsAxios(): Promise<IEvento[]> {
         console.error('Falha ao carregar cache: ', error);
       }
     }
+  } catch (error) {
+    console.log('Erro ao gerar cache!!!');
+  }
+
+  try {
     const latestUrl = `${url}?v=${new Date().toISOString().replace(/\D/g, '')}`;
     const { status, statusText, data: appData } = await api.get(latestUrl);
     if (status === 200) {
       updateApp(app, appData);
-      const cache = await caches.open(cacheName);
-      await cache.put(url, new Response(JSON.stringify(app)));
+      if ('caches' in window) {
+        const cache = await caches.open('eventDataCache')
+        await cache.put(url, new Response(JSON.stringify(app)))
+      } else {
+        console.warn('A API de Cache não está disponível neste ambiente.');
+      }
     } else {
       console.error('Erro ao carregar dados do servidor:', statusText);
     }

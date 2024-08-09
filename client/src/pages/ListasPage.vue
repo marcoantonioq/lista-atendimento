@@ -1,6 +1,11 @@
 <template>
   <div class="text-center">
-    <div class="print-only">LISTA DE ATENDIMENTO E DIVERSOS</div>
+    <div class="print-only">
+      LISTA DE ATENDIMENTO E DIVERSOS
+    </div>
+    <div class="print-hide text-red">
+      PRÉVIA
+    </div>
     <div>
       {{ data.locale.replace(/-$/, '').trim() }}
     </div>
@@ -9,25 +14,11 @@
   <div id="lista">
     <div class="print-hide menu flex space-between">
       <div class="search">
-        <input
-          type="text"
-          v-model="data.search"
-          placeholder="Pesquisar..."
-          x-webkit-speech=""
-        />
+        <input type="text" v-model="data.search" placeholder="Pesquisar..." x-webkit-speech="" />
       </div>
-      <q-icon
-        v-if="settings.connected && settings.admin"
-        name="add"
-        @click.prevent="settings.createEvent"
-      />
-      <q-icon
-        v-if="settings.connected && settings.admin"
-        name="cached"
-        @click.prevent="reload"
-        :class="{ rotate: settings.loading }"
-        style="transform: scaleX(-1)"
-      />
+      <q-icon v-if="settings.connected && settings.admin" name="add" @click.prevent="settings.createEvent" />
+      <q-icon v-if="settings.connected && settings.admin" name="cached" @click.prevent="reload"
+        :class="{ rotate: settings.loading }" style="transform: scaleX(-1)" />
       <q-icon v-if="!!settings.shared" name="share" @click.prevent="shared" />
       <q-icon v-if="!!settings.shared" name="quiz" @click.prevent="whatsapp" />
       <q-icon name="print" @click.prevent="imprimir()" />
@@ -40,27 +31,14 @@
           <th colspan="5">{{ title }}</th>
         </thead>
         <tbody>
-          <ListaTR
-            v-for="event in listFiltered.filter((e) => e.title === title)"
-            :key="event.gid"
-            :event="event"
-            @dblclick="settings.selected = event"
-            @click.right.prevent="settings.selected = event"
-          />
+          <ListaTR v-for="event in listFiltered.filter((e) => e.title === title)" :key="event.gid" :event="event"
+            @dblclick="settings.selected = event" @click.right.prevent="settings.selected = event" />
         </tbody>
       </table>
     </div>
-    <div
-      class="print-hide"
-      v-if="!listFiltered.length && !data.search.startsWith('*')"
-    >
-      <q-btn
-        class="print-hide q-mt-lg"
-        @click="data.search = `*${data.search}`"
-        color="blue"
-        flat
-        label="Lista completa..."
-      />
+    <div class="print-hide" v-if="!listFiltered.length && !data.search.startsWith('*')">
+      <q-btn class="print-hide q-mt-lg" @click="data.search = `*${data.search}`" color="blue" flat
+        label="Lista completa..." />
     </div>
 
     <div class="print-only right">
@@ -77,11 +55,7 @@
       </i>
     </div>
   </div>
-  <IconCalendarComponent
-    :search="data.search"
-    :events="listFiltered"
-    @update="data.search = $event"
-  />
+  <IconCalendarComponent :search="data.search" :events="listFiltered" @update="data.search = $event" />
 </template>
 
 <script setup lang="ts">
@@ -144,9 +118,8 @@ function updateList() {
       console.log('Regex search inválido!');
     }
     events = events.filter((event) => {
-      const text = `${event.date?.toLocaleString()} ${event.title} ${
-        event.locale
-      } ${event.desc}`;
+      const text = `${event.date?.toLocaleString()} ${event.title} ${event.locale
+        } ${event.desc}`;
       return (
         searchText.split(' ').every((e) => normalizeString(text).includes(e)) ||
         (regexSearch && regexSearch.test(text))
@@ -283,6 +256,7 @@ div.table {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(-360deg);
   }
